@@ -1,0 +1,31 @@
+{
+  "name": "generator-proxweb",
+  "version": "0.0.1",
+  "description": "A generator for Yeoman to build websites and webapps for Proximity BBDO France and Indian Ocean",
+  "main": "index.js",
+  "scripts": {
+  },
+  "keywords": [
+    "yeoman-generator",
+    "express",
+    "angular",
+    "sass"
+  ],
+  "homepage": "https://github.com/proximitybbdofrance/generator-proxweb",
+  "bugs": "https://github.com/proximitybbdofrance/generator-proxweb/issues",
+  "author": {
+    "name": "David Dias",
+    "email": "diasd@proximity.bbdo.fr",
+    "url": "http://www.david-dias.com/"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^1.1.0",
+    "glob": "^5.0.14",
+    "lodash": "^3.10.0",
+    "mkdirp": "^0.5.1",
+    "underscore.string": "^3.1.1",
+    "yeoman-generator": "^0.18.7",
+    "yosay": "^1.0.5"
+  }
+}
