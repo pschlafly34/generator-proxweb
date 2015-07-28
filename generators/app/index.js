@@ -265,6 +265,12 @@ module.exports = generators.Base.extend({
 
       // CSS preprocessor
       if (this.options.cssPreprocessor === 'sass') {
+        this.mkdir('app/styles/base');
+        this.mkdir('app/styles/helpers');
+        this.mkdir('app/styles/layout');
+        this.mkdir('app/styles/components');
+        this.mkdir('app/styles/pages');
+        this.mkdir('app/styles/vendors');
         this.copy('app/styles/theme/global.scss');
       }
 

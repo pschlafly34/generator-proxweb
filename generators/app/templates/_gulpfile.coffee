@@ -39,7 +39,7 @@ options =
 <% } %>
 
 gulp.task 'css', ->
-  gulp.src 'app/styles/**/*.{scss, css}'
+  gulp.src 'app/styles/**/*.scss'
     .pipe plumber()
     <% if (cssPreprocessor === 'sass') { %>
     .pipe sass(options.sass)
