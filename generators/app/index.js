@@ -169,7 +169,8 @@ module.exports = generators.Base.extend({
         message: 'Select a css preprocessor to use:' ,
         choices: [
           'None',
-          'Sass'
+          'Sass (Simple)',
+          'Sass (Complexe)'
         ],
         store: true
       }];
@@ -254,6 +255,7 @@ module.exports = generators.Base.extend({
 
       this.mkdir('app');
       this.mkdir('app/views');
+      this.mkdir('app/styles/');
 
       if (this.options.versionning === 'git') {
         this.fs.copy(
@@ -294,21 +296,16 @@ module.exports = generators.Base.extend({
         this.mkdir('app/views/_base');
         this.mkdir('app/views/pages');
 
-        this.fs.copy(
-          this.templatePath('app/views/_base/layout.jade'),
-          this.destinationPath('app/views/_base/layout.jade'));
+        this.copy('app/views/_base/layout.jade');
+        this.copy('app/views/_base/head.jade');
+        this.copy('app/views/_base/footer.jade');
+        this.copy('app/views/pages/home.jade');
+      }
 
+      if (this.options.viewEngine === 'none') {
         this.fs.copy(
-          this.templatePath('app/views/_base/head.jade'),
-          this.destinationPath('app/views/_base/head.jade'));
-
-        this.fs.copy(
-          this.templatePath('app/views/_base/footer.jade'),
-          this.destinationPath('app/views/_base/footer.jade'));
-
-        this.fs.copy(
-          this.templatePath('app/views/pages/home.jade'),
-          this.destinationPath('app/views/pages/home.jade'));
+          this.templatePath('app/views/pages/_index.html'),
+          this.destinationPath('app/views/index.html'));
       }
 
       if (this.options.whichFramework === 'angularjs') {
@@ -320,14 +317,46 @@ module.exports = generators.Base.extend({
       }
 
       // CSS preprocessor
-      if (this.options.cssPreprocessor === 'sass') {
+      if (this.options.cssPreprocessor === 'sass (complexe)') {
         this.mkdir('app/styles/base');
+        this.copy('app/styles/base/_headings.scss');
+        this.copy('app/styles/base/_form.scss');
+        this.copy('app/styles/base/_button.scss');
+        this.copy('app/styles/base/_media.scss');
+        this.copy('app/styles/base/_typography.scss');
+        this.copy('app/styles/base/_table.scss');
+
         this.mkdir('app/styles/helpers');
+        this.copy('app/styles/helpers/_functions.scss');
+        this.copy('app/styles/helpers/_mixins.scss');
+        this.copy('app/styles/helpers/_extends.scss');
+
         this.mkdir('app/styles/layout');
+        this.copy('app/styles/layout/_l-grid.scss');
+        this.copy('app/styles/layout/_l-header.scss');
+        this.copy('app/styles/layout/_l-footer.scss');
+
         this.mkdir('app/styles/components');
+        this.copy('app/styles/components/_all.scss');
+
         this.mkdir('app/styles/pages');
+        this.copy('app/styles/pages/_all.scss');
+
         this.mkdir('app/styles/vendors');
+        this.copy('app/styles/vendors/_all.scss');
+
         this.copy('app/styles/theme/global.scss');
+        this.copy('app/styles/theme/_variables.scss');
+      }
+
+      if (this.options.cssPreprocessor === 'sass (simple)') {
+        this.fs.copyTpl(
+          this.templatePath('app/styles/theme/global.scss'),
+          this.destinationPath('app/styles/global.scss'),
+          {
+            cssPreprocessor: this.options.cssPreprocessor
+          }
+        );
       }
 
       // Database

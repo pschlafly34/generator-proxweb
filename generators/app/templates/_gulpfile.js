@@ -47,14 +47,14 @@ options = sass({
  * Used to generate the CSS files using SASS files
  */
 gulp.task('css', function() {
-  return gulp.src(path.styles.input + '/**/*.{scss,css}')
+  return gulp.src('./app/styles/**/*.scss')
     .pipe(plumber())<% if (cssPreprocessor === 'sass') { %>
     .pipe(sass(options.sass))<% } %>
     .pipe(prefix("> 1%"))
     .pipe(cssmin({
       keepSpecialComments: 0
     }))
-    .pipe(gulp.dest(path.styles.output))
+    .pipe(gulp.dest('./public/css'))
     .pipe(reload({stream: true}));
 });
 
@@ -87,7 +87,17 @@ gulp.task('img', function() {
  */
 gulp.task('server', function() {
   return nodemon({
-    script: 'app.js'
+    script: 'app.js',
+    watch: ['app.js']
+  })
+  .on('change', ['server'])
+  .on('restart', function onRestart() {
+    // reload connected browsers after a slight delay
+    setTimeout(function () {
+      reload({
+        stream: true   //
+      });
+    }, 200);
   });
 });
 
@@ -135,8 +145,8 @@ gulp.task('jade', function() {
 
 
 gulp.task('watch', function() {
-
+  gulp.watch('./app/styles/**/*.scss', ['css']);
 });
 
-gulp.task('default', ['css', 'server', 'watch']);
+gulp.task('default', ['css', 'server', 'reload', 'watch']);
 gulp.task('build', ['css', 'jade']);

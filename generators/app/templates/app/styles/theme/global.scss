@@ -1,6 +1,7 @@
 @charset 'UTF-8';
-
-@import 'variables';
+<% if (cssPreprocessor === 'sass (simple)') { %>
+@import 'normalize';<% } %>
+<% if (cssPreprocessor === 'sass (complexe)') { %>@import 'variables';
 
 @import
   '../helpers/functions',
@@ -22,4 +23,4 @@
 
 @import '../pages/all';
 
-@import '../vendors/all';
+@import '../vendors/all';<% } %>

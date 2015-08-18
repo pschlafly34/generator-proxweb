@@ -43,6 +43,6 @@ requireFiles('./app/routes', app);
 var port = process.env.PORT || 4000;
 
 http.createServer(app).listen(port, function() {
-  console.log("## The server is ready! Let's connect on localhost:4001 ##".magenta.bold);
+  console.log("## The server is ready! ##".magenta.bold);
   // console.table([ [packageJSON.version, app.get('port')] ]);
 });

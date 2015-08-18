@@ -69,9 +69,9 @@ module.exports = function(app) {
   =================================================== */
 
   app.use('/img', express.static('./public/img'));
-  app.use('/styles', express.static('./public/css'));
+  app.use('/css', express.static('./public/css'));
   app.use('/fonts', express.static('./public/fonts'));
-  app.use('/scripts', express.static('./public/js'));
+  app.use('/js', express.static('./public/js'));
 
 
   if (app.get('env') === 'development') {
