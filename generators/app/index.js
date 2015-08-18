@@ -24,6 +24,11 @@ module.exports = generators.Base.extend({
       type: Boolean
     });
 
+    this.option('babel', {
+      desc: 'Use Babel',
+      type: Boolean,
+      defaults: true
+    });
 
   },
   initializing: function () {
@@ -206,8 +211,8 @@ module.exports = generators.Base.extend({
 
     gulpfile: function () {
       this.fs.copyTpl(
-        this.templatePath('_gulpfile.coffee'),
-        this.destinationPath('gulpfile.coffee'),
+        this.templatePath('_gulpfile.js'),
+        this.destinationPath('gulpfile.js'),
         {
           date: (new Date).toISOString().split('T')[0],
           name: this.pkg.name,
@@ -250,17 +255,68 @@ module.exports = generators.Base.extend({
       this.mkdir('app');
       this.mkdir('app/views');
 
-
       if (this.options.versionning === 'git') {
         this.fs.copy(
           this.templatePath('_gitignore'),
           this.destinationPath('.gitignore'));
+
+        this.fs.copy(
+          this.templatePath('_gitattributes'),
+          this.destinationPath('.gitattributes')
+      );
       }
 
       // Framework
       if (this.options.whichFramework === 'expressjs') {
         this.mkdir('app/controllers');
-        this.mkdir('app/models');
+        this.mkdir('app/routes');
+        this.mkdir('config');
+
+        this.fs.copy(
+          this.templatePath('app/controllers/index.js'),
+          this.destinationPath('app/controllers/index.js'));
+
+        this.fs.copy(
+          this.templatePath('app/routes/index.js'),
+          this.destinationPath('app/routes/index.js'));
+
+        this.fs.copy(
+          this.templatePath('config/express.js'),
+          this.destinationPath('config/express.js'));
+
+        this.fs.copy(
+          this.templatePath('_app.js'),
+          this.destinationPath('app.js'));
+      }
+
+      // Engine
+      if (this.options.viewEngine === 'jade') {
+        this.mkdir('app/views/_base');
+        this.mkdir('app/views/pages');
+
+        this.fs.copy(
+          this.templatePath('app/views/_base/layout.jade'),
+          this.destinationPath('app/views/_base/layout.jade'));
+
+        this.fs.copy(
+          this.templatePath('app/views/_base/head.jade'),
+          this.destinationPath('app/views/_base/head.jade'));
+
+        this.fs.copy(
+          this.templatePath('app/views/_base/footer.jade'),
+          this.destinationPath('app/views/_base/footer.jade'));
+
+        this.fs.copy(
+          this.templatePath('app/views/pages/home.jade'),
+          this.destinationPath('app/views/pages/home.jade'));
+      }
+
+      if (this.options.whichFramework === 'angularjs') {
+        this.mkdir('app/scripts');
+
+        this.fs.copy(
+          this.templatePath('app/scripts'),
+          this.destinationPath('app/scripts'));
       }
 
       // CSS preprocessor
@@ -280,6 +336,11 @@ module.exports = generators.Base.extend({
       }
       if (this.options.database === 'mongodb') {
         this.mkdir('data');
+        this.mkdir('app/models');
+
+        this.fs.copy(
+          this.templatePath('app/models/index.js'),
+          this.destinationPath('app/models/index.js'));
       }
 
       // Public directories
@@ -291,27 +352,27 @@ module.exports = generators.Base.extend({
       mkdirp.sync('public/img');
     },
 
-    // install: function () {
-    //   this.installDependencies({
-    //     skipMessage: this.options['skip-install-message'],
-    //     skipInstall: this.options['skip-install']
-    //   });
-    // },
+    install: function () {
+      this.installDependencies({
+        skipMessage: this.options['skip-install-message'],
+        skipInstall: this.options['skip-install']
+      });
+    },
 
-    // end: function () {
-    //   var howToInstall =
-    //     '\nAfter running ' +
-    //     chalk.yellow.bold('npm install & bower install') +
-    //     ', inject your' +
-    //     '\nfront end dependencies by running ' +
-    //     chalk.yellow.bold('gulp wiredep') +
-    //     '.';
+    end: function () {
+      var howToInstall =
+        '\nAfter running ' +
+        chalk.yellow.bold('npm install & bower install') +
+        ', inject your' +
+        '\nfront end dependencies by running ' +
+        chalk.yellow.bold('gulp wiredep') +
+        '.';
 
-    //   if (this.options['skip-install']) {
-    //     this.log(howToInstall);
-    //     return;
-    //   }
-    // }
+      if (this.options['skip-install']) {
+        this.log(howToInstall);
+        return;
+      }
+    }
 
   }
 
