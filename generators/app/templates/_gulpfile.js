@@ -48,12 +48,9 @@ options = sass({
  */
 gulp.task('css', function() {
   return gulp.src('./app/styles/**/*.scss')
-    .pipe(plumber())<% if (cssPreprocessor === 'sass') { %>
+    .pipe(plumber())<% if (cssPreprocessor === 'sass (simple)' || 'sass (complexe)') { %>
     .pipe(sass(options.sass))<% } %>
     .pipe(prefix("> 1%"))
-    .pipe(cssmin({
-      keepSpecialComments: 0
-    }))
     .pipe(gulp.dest('./public/css'))
     .pipe(reload({stream: true}));
 });
@@ -62,7 +59,7 @@ gulp.task('css', function() {
  * JavaScript task
  */
 gulp.task('js', function() {
-  return gulp.src(path.scripts.input + '/**/*.js')
+  return gulp.src(this.path.scripts.input + '/**/*.js')
     .pipe(plumber())
     .pipe(eslint())
     .pipe(eslint.format())
@@ -148,5 +145,6 @@ gulp.task('watch', function() {
   gulp.watch('./app/styles/**/*.scss', ['css']);
 });
 
-gulp.task('default', ['css', 'server', 'reload', 'watch']);
+gulp.task('serve', ['css', 'server', 'reload', 'watch']);
+gulp.task('default', ['test','build']);
 gulp.task('build', ['css', 'jade']);

@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "description": "A generator for Yeoman to build websites and webapps for Proximity BBDO France and Indian Ocean",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "keywords": [
     "yeoman-generator",
     "express",
@@ -27,5 +26,8 @@
     "underscore.string": "^3.1.1",
     "yeoman-generator": "^0.18.7",
     "yosay": "^1.0.5"
+  },
+  "devDependencies": {
+    "underscore.string": "^3.1.1"
   }
 }

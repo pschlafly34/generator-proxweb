@@ -1,0 +1,24 @@
+/// Helper to clear inner floats
+/// Use with parcemony, prefer using the class .row
+/// ---
+/// @access public
+@mixin clearfix {
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+/// Mixin for opacity
+/// ---
+/// @param {number} $value [0.5] - Value for the opacity
+@mixin opacity($value: 0.5) {
+  opacity: $value;
+  $opacity-ie: $value * 100;
+  filter: alpha(opacity=$opacity-ie); //IE8
+  zoom: 1;
+}

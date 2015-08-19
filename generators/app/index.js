@@ -2,12 +2,15 @@
 
 var util = require('util');
 var path = require('path');
+
 var generators = require('yeoman-generator');
 var glob = require('glob');
 var _ = require('lodash');
 var mkdirp = require('mkdirp');
 var chalk = require('chalk');
 var yosay = require('yosay');
+
+var _s = require('underscore.string');
 
 module.exports = generators.Base.extend({
   constructor: function () {
@@ -27,7 +30,7 @@ module.exports = generators.Base.extend({
     this.option('babel', {
       desc: 'Use Babel',
       type: Boolean,
-      defaults: true
+      defaults: false
     });
 
   },
@@ -107,17 +110,17 @@ module.exports = generators.Base.extend({
       }.bind(this));
     },
 
-    whichFramework: function () {
+    whichJsFramework: function () {
 
-      if (this.options.whichFramework) {
+      if (this.options.whichJsFramework) {
         return true;
       }
 
       var done = this.async();
       var prompt = [{
         type: 'list',
-        name: 'whichFramework',
-        message: 'Select a framework to use:',
+        name: 'whichJsFramework',
+        message: 'Select a JS framework to use:',
         choices: [
           'None',
           'ExpressJS',
@@ -127,7 +130,32 @@ module.exports = generators.Base.extend({
       }];
 
       this.prompt(prompt, function (response) {
-        this.options.whichFramework = response.whichFramework.toLowerCase();
+        this.options.whichJsFramework = response.whichJsFramework.toLowerCase();
+        done();
+      }.bind(this));
+    },
+
+    whichCssFramework: function () {
+
+      if (this.options.whichCssFramework) {
+        return true;
+      }
+
+      var done = this.async();
+      var prompt = [{
+        type: 'list',
+        name: 'whichCssFramework',
+        message: 'Select a CSS framework to use:',
+        choices: [
+          'None',
+          'Bootstrap (SASS)',
+          'Foundation'
+        ],
+        store: true
+      }];
+
+      this.prompt(prompt, function (response) {
+        this.options.whichCssFramework = response.whichCssFramework.toLowerCase();
         done();
       }.bind(this));
     },
@@ -144,7 +172,7 @@ module.exports = generators.Base.extend({
         name: 'viewEngine',
         message: 'Select a view engine to use:',
         choices: [
-          'None',
+          'HTML',
           'Jade'
         ],
         store: true
@@ -168,7 +196,7 @@ module.exports = generators.Base.extend({
         name: 'cssPreprocessor',
         message: 'Select a css preprocessor to use:' ,
         choices: [
-          'None',
+          'CSS',
           'Sass (Simple)',
           'Sass (Complexe)'
         ],
@@ -228,12 +256,50 @@ module.exports = generators.Base.extend({
         this.destinationPath('package.json'),
         {
           cssPreprocessor: this.options.cssPreprocessor,
-          whichFramework: this.options.whichFramework,
+          whichJsFramework: this.options.whichJsFramework,
           viewEngine: this.options.viewEngine,
           database: this.options.database
         }
       );
     },
+
+    bower: function () {
+      var bowerJson = {
+        name: _s.slugify(this.appname),
+        private: true,
+        dependencies: {}
+      };
+
+    if (this.options.whichCssFramework == 'bootstrap (sass)') {
+      bowerJson.dependencies['bootstrap-sass'] = '~3.3.5';
+        bowerJson.overrides = {
+          'bootstrap-sass': {
+            'main': [
+              'assets/stylesheets/_bootstrap.scss',
+              'assets/fonts/bootstrap/*',
+              'assets/javascripts/bootstrap.js'
+            ]
+          }
+        };
+    }
+
+
+
+
+      this.fs.writeJSON('bower.json', bowerJson);
+      this.fs.copy(
+        this.templatePath('_bowerrc'),
+        this.destinationPath('.bowerrc')
+      );
+    },
+
+    editorConfig: function () {
+      this.fs.copyTpl(
+        this.templatePath('_editorconfig'),
+        this.destinationPath('.editorconfig')
+      );
+    },
+
     buildEnv: function () {
 
 
@@ -251,8 +317,6 @@ module.exports = generators.Base.extend({
       // this.directory('.', 'public/css');
     },
     assetsDirs: function () {
-      this.copy('_editorconfig', '.editorconfig');
-
       this.mkdir('app');
       this.mkdir('app/views');
       this.mkdir('app/styles/');
@@ -260,35 +324,40 @@ module.exports = generators.Base.extend({
       if (this.options.versionning === 'git') {
         this.fs.copy(
           this.templatePath('_gitignore'),
-          this.destinationPath('.gitignore'));
+          this.destinationPath('.gitignore')
+        );
 
         this.fs.copy(
           this.templatePath('_gitattributes'),
           this.destinationPath('.gitattributes')
-      );
+        );
       }
 
       // Framework
-      if (this.options.whichFramework === 'expressjs') {
+      if (this.options.whichJsFramework === 'expressjs') {
         this.mkdir('app/controllers');
         this.mkdir('app/routes');
         this.mkdir('config');
 
         this.fs.copy(
           this.templatePath('app/controllers/index.js'),
-          this.destinationPath('app/controllers/index.js'));
+          this.destinationPath('app/controllers/index.js')
+        );
 
         this.fs.copy(
           this.templatePath('app/routes/index.js'),
-          this.destinationPath('app/routes/index.js'));
+          this.destinationPath('app/routes/index.js')
+        );
 
         this.fs.copy(
           this.templatePath('config/express.js'),
-          this.destinationPath('config/express.js'));
+          this.destinationPath('config/express.js')
+        );
 
         this.fs.copy(
           this.templatePath('_app.js'),
-          this.destinationPath('app.js'));
+          this.destinationPath('app.js')
+        );
       }
 
       // Engine
@@ -305,15 +374,17 @@ module.exports = generators.Base.extend({
       if (this.options.viewEngine === 'none') {
         this.fs.copy(
           this.templatePath('app/views/pages/_index.html'),
-          this.destinationPath('app/views/index.html'));
+          this.destinationPath('app/views/index.html')
+        );
       }
 
-      if (this.options.whichFramework === 'angularjs') {
+      if (this.options.whichJsFramework === 'angularjs') {
         this.mkdir('app/scripts');
 
         this.fs.copy(
           this.templatePath('app/scripts'),
-          this.destinationPath('app/scripts'));
+          this.destinationPath('app/scripts')
+        );
       }
 
       // CSS preprocessor
@@ -354,8 +425,14 @@ module.exports = generators.Base.extend({
           this.templatePath('app/styles/theme/global.scss'),
           this.destinationPath('app/styles/global.scss'),
           {
-            cssPreprocessor: this.options.cssPreprocessor
+            cssPreprocessor: this.options.cssPreprocessor,
+            whichCssFramework: this.options.whichCssFramework
           }
+        );
+
+        this.fs.copy(
+          this.templatePath('app/styles/helpers/_normalize.scss'),
+          this.destinationPath('app/styles/_normalize.scss')
         );
       }
 
@@ -369,7 +446,8 @@ module.exports = generators.Base.extend({
 
         this.fs.copy(
           this.templatePath('app/models/index.js'),
-          this.destinationPath('app/models/index.js'));
+          this.destinationPath('app/models/index.js')
+        );
       }
 
       // Public directories
