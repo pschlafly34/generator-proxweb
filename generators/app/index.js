@@ -270,8 +270,8 @@ module.exports = generators.Base.extend({
         dependencies: {}
       };
 
-    if (this.options.whichCssFramework == 'bootstrap (sass)') {
-      bowerJson.dependencies['bootstrap-sass'] = '~3.3.5';
+      if (this.options.whichCssFramework == 'bootstrap (sass)') {
+        bowerJson.dependencies['bootstrap-sass'] = '~3.3.5';
         bowerJson.overrides = {
           'bootstrap-sass': {
             'main': [
@@ -281,10 +281,7 @@ module.exports = generators.Base.extend({
             ]
           }
         };
-    }
-
-
-
+      }
 
       this.fs.writeJSON('bower.json', bowerJson);
       this.fs.copy(
@@ -357,6 +354,14 @@ module.exports = generators.Base.extend({
         this.fs.copy(
           this.templatePath('_app.js'),
           this.destinationPath('app.js')
+        );
+      }
+
+      if (this.options.whichJsFramework === 'expressjs' || 'none') {
+        this.mkdir('app/scripts/');
+        this.fs.copy(
+          this.templatePath('app/scripts/modules/core.js'),
+          this.destinationPath('app/scripts/modules/core.js')
         );
       }
 

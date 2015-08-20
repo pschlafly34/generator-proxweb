@@ -1,13 +1,10 @@
 @charset 'UTF-8';
 <% if (cssPreprocessor === 'sass (simple)') { %>
 @import 'normalize';<% } %>
-
 <% if (whichCssFramework == 'bootstrap (sass)') { %>
-$icon-font-path: "../bower_components/bootstrap-sass/assets/fonts/bootstrap/";
-
-@import "bootstrap-sass/assets/stylesheets/bootstrap.scss";
+@import "./bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss";
+$icon-font-path: "./bower_components/bootstrap-sass/assets/fonts/bootstrap/";
 <% } %>
-
 <% if (cssPreprocessor === 'sass (complexe)') { %>@import 'variables';
 
 @import
