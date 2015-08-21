@@ -1,9 +1,12 @@
+'use strict';
+
 var glob = require('glob');
 var del = require('del');
-var path = require("path");
+var path = require('path');
 
 var bower = require('bower');
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var sass = require('gulp-sass');
 var prefix = require('gulp-autoprefixer');
 var sourcemaps = require('gulp-sourcemaps');
@@ -15,16 +18,21 @@ var jade = require('gulp-jade');
 var uglify = require('gulp-uglify');
 var eslint = require('gulp-eslint');
 var install = require('gulp-install');
-var browserify = require('gulp-browserify');
+var browserify = require('browserify');
+var debowerify = require('debowerify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+
+var watchify = require('watchify');
 var mocha = require('gulp-mocha');
 var rename = require('gulp-rename');
 var mainBowerFiles = require('gulp-main-bower-files');
 
 // Server + browser with live refresh / injection
 var browserSync = require('browser-sync');
-var reload = browserSync.reload
+var reload = browserSync.reload;
 
-paths = {
+var paths = {
   src: './app',
   dist: './public',
   scripts: {
@@ -48,21 +56,9 @@ paths = {
   }
 };
 
-options = sass({
+var options = sass({
   errLogToConsole: true,
   outputStyle: 'expanded'
-});
-
-
-/**
- * Bower install
- * Used gulp bower nameofplugin to install your plugin
- */
-gulp.task('bower', function(cb){
-  bower.commands.install([], {save: true}, {})
-    .on('end', function(installed){
-      cb();
-    });
 });
 
 /**
@@ -79,18 +75,39 @@ gulp.task('css', function() {
     .pipe(reload({stream: true}));
 });
 
+
 /**
  * JavaScript task
  */
 gulp.task('js', function() {
-  return gulp.src(paths.scripts.input + '/**/*.js')
-    .pipe(plumber())
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(browserify())
-    .pipe(uglify())
-    .pipe(gulp.dest(paths.scripts.output))
+
+  var dir = './app/scripts/modules/';
+  var requires = glob.sync(dir + '**/*.js').map(function(file) {
+    return [file, {expose: path.basename(file, '.js') }];
+  });
+
+  // gulp.src('./app/scripts/modules/main.js')
+
+    var b = browserify({
+      debug: true,
+      // defining transforms here will avoid crashing your stream
+    });
+
+  return b.bundle()
+    .pipe(source('./app/scripts/modules/**/*.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+      .pipe(uglify())
+      .on('error', gutil.log)
+    .pipe(sourcemaps.write('./'))
+    .pipe(rename('main.min.js'))
+    .pipe(gulp.dest('./public/js'))
     .pipe(reload({stream: true}));
+});
+
+gulp.task('install-bower', function() {
+  return gulp.src('./bower.json')
+    .pipe(install())
 });
 
 /**
@@ -122,33 +139,6 @@ gulp.task('server', function() {
   });
 });
 
-
-gulp.task('install-bower', function() {
-  return gulp.src('./bower.json')
-    .pipe(install())
-});
-
-gulp.task('main-bower-files', ['install-bower'], function() {
-  return gulp.src('./bower.json')
-    .pipe(mainBowerFiles())
-    .pipe(gulp.dest('./app/scripts/libs'));
-});
-
-gulp.task('browserify', ['main-bower-files'], function () {
-  var dir = __dirname + '/app/scripts/modules/';
-  var requires = glob.sync(dir + '**/*.js').map(function(file) {
-    return [file, {expose: path.basename(file, '.js') }];
-  });
-  gulp.src( dir + 'core.js')
-    .pipe(browserify({
-      insertGlobals: false,
-      require: requires
-    }))
-    .pipe(rename('modules.js'))
-//    .pipe(concat('modules.js'))
-    .pipe(gulp.dest('./public/js/'));
-});
-
 /**
  * Test mocha
  */
@@ -156,11 +146,6 @@ gulp.task('mocha', function () {
   gulp.src('./test/mocha.js')
     .pipe(mocha({reporter: 'spec'}));
 });
-
-//gulp.task('phantomjs', function () {
-//  gulp.src('.')
-//    .pipe(exec('phantomjs ./test/phantom.js', {silent: false}));
-//});
 
 /**
  * Reload task
@@ -207,9 +192,9 @@ gulp.task('jade', function() {
 
 gulp.task('watch', function() {
   gulp.watch('./app/styles/**/*.scss', ['css']);
-  gulp.watch('./app/views/**/*.jade', [reload]);
-  gulp.watch('./app/scripts/**/*.js', [reload]);
-  gulp.watch('./app/images/**/*', [reload]);
+  gulp.watch('./app/views/**/*.jade', []);
+  gulp.watch('./app/scripts/**/*.js', []);
+  gulp.watch('./app/images/**/*', []);
 });
 
 // #################
