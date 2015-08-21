@@ -2,6 +2,7 @@ var glob = require('glob');
 var del = require('del');
 var path = require("path");
 
+var bower = require('bower');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var prefix = require('gulp-autoprefixer');
@@ -50,6 +51,18 @@ paths = {
 options = sass({
   errLogToConsole: true,
   outputStyle: 'expanded'
+});
+
+
+/**
+ * Bower install
+ * Used gulp bower nameofplugin to install your plugin
+ */
+gulp.task('bower', function(cb){
+  bower.commands.install([], {save: true}, {})
+    .on('end', function(installed){
+      cb();
+    });
 });
 
 /**

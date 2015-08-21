@@ -72,6 +72,7 @@ module.exports = function(app) {
   app.use('/css', express.static('./public/css'));
   app.use('/fonts', express.static('./public/fonts'));
   app.use('/js', express.static('./public/js'));
+  app.use('/bower_components', express.static('./bower_components'));
 
 
   if (app.get('env') === 'development') {

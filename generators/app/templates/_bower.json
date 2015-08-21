@@ -1,20 +1,21 @@
 {
   "name": "test",
   "description": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+      "**/.*",
+      "node_modules",
+      "bower_components",
+      "test",
+      "tests"
+  ],
+  "keywords": [
+  ]
   "main": [
   ],
   "dependencies": {
   },
   "devDependencies": {
   },
-  "keywords": [
-  ],
-  "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ]
 }

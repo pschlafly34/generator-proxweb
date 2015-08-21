@@ -1,9 +1,11 @@
 {
   "private": true,
   "engines": {
-    "node": ">=0.12.4"
+  "node": ">=0.12.4"
   },
-  "dependencies": {<% if (whichJsFramework === 'expressjs') { %>
+  "dependencies": {
+    "jquery": "^1.9.1",
+    <% if (whichJsFramework === 'expressjs') { %>
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.3.4",
     "cookie-session": "^1.1.0",
@@ -14,9 +16,21 @@
     "jade": "^1.11.0",<% } %>
     "morgan": "^1.5.3"<% } %>
   },
+  "browserify": {
+    "transform": [
+      "browserify-shim",
+      "debowerify"
+    ]
+  },
+  "browserify-shim": {
+    "browserify-shim": "./app/scripts/vendors/shim.js"
+  },
   "devDependencies": {
+    "browserify": "^11.0.1",
+    "browserify-shim": "^3.8.10",
     "browser-sync": "^2.7.6",
     "colors": "^1.1.2",
+    "debowerify": "^1.3.1",
     "glob": "^5.0.14",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^2.3.1",
@@ -24,6 +38,7 @@
     "gulp-concat": "^2.6.0",
     "gulp-cssmin": "^0.1.7",
     "gulp-install": "^0.5.0",
+    "gulp-inject": "^1.5.0",
     "gulp-minify-css": "^1.1.1",
     "gulp-minify-html": "^1.0.0",
     "gulp-plumber": "^1.0.1",<% if (cssPreprocessor === 'sass') { %>
@@ -42,6 +57,7 @@
     "gulp-uglify": "^1.2.0",
     "imagemin-mozjpeg": "^5.1.0",
     "gulp-iconfont": "^1.0.0",
-    "imagemin-pngquant": "^4.1.0"
+    "imagemin-pngquant": "^4.1.0",
+    "wiredep": "^3.0.0-beta"
   }
 }
